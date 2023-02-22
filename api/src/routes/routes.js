@@ -22,6 +22,38 @@ router.get('/fetchImages', async(req,res)=>{
 })
 
 
+async function updateMetadata(photoPath, data) {
+    await exiftool.write(photoPath, {
+        Description: data
+    });
+}
+
+
+async function readMetadata(photoPath) {
+    try{
+     
+        const data = await exiftool.read(photoPath);
+
+        return data;
+    }catch(err){
+        throw err;
+    }finally{
+       console.log('finally')
+    }
+}
+
+
+router.put('/putImage', async (req,res)=>{
+    
+    await updateMetadata(__dirname+`/../public/data/images/${req.body.file}`, req.body.Description);
+
+    const metadata = await readMetadata(__dirname+`/../public/data/images/${req.body.file}`);
+  
+    //const result = JSON.stringify(metadata.Description);
+  
+    return await res.json(metadata)
+})
+
 
 module.exports = router
 
